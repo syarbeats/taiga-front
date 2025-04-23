@@ -1,0 +1,102 @@
+version: '3'
+
+services:
+  taiga-front:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: taiga-front
+    ports:
+      - "80:80"
+    environment:
+      # Base configuration
+      - TAIGA_URL=http://localhost
+      - TAIGA_WEBSOCKETS_URL=ws://localhost
+      - TAIGA_SUBPATH=
+      - DEBUG=false
+      - DEFAULT_LANGUAGE=en
+      
+      # Authentication settings
+      - PUBLIC_REGISTER_ENABLED=false
+      - ENABLE_GITHUB_AUTH=false
+      - GITHUB_CLIENT_ID=
+      - ENABLE_GITLAB_AUTH=false
+      - GITLAB_CLIENT_ID=
+      - GITLAB_URL=
+      
+      # Plugins
+      - ENABLE_SLACK=false
+      
+      # Importers
+      - ENABLE_GITHUB_IMPORTER=false
+      - ENABLE_JIRA_IMPORTER=false
+      - ENABLE_TRELLO_IMPORTER=false
+    restart: unless-stopped
+    networks:
+      - taiga-network
+
+# If you need to connect to a Taiga backend, uncomment and configure the following service
+# 
+# services:
+#   taiga-back:
+#     image: taigaio/taiga-back:6.8.2
+#     container_name: taiga-back
+#     environment:
+#       - POSTGRES_DB=taiga
+#       - POSTGRES_USER=taiga
+#       - POSTGRES_PASSWORD=taiga
+#       - POSTGRES_HOST=taiga-db
+#       - RABBITMQ_USER=taiga
+#       - RABBITMQ_PASS=taiga
+#       - RABBITMQ_HOST=taiga-events-rabbitmq
+#       - TAIGA_SECRET_KEY=your-secret-key
+#       - TAIGA_SITES_SCHEME=http
+#       - TAIGA_SITES_DOMAIN=localhost
+#     depends_on:
+#       - taiga-db
+#       - taiga-events-rabbitmq
+#     networks:
+#       - taiga-network
+#
+#   taiga-db:
+#     image: postgres:12-alpine
+#     container_name: taiga-db
+#     environment:
+#       - POSTGRES_DB=taiga
+#       - POSTGRES_USER=taiga
+#       - POSTGRES_PASSWORD=taiga
+#     volumes:
+#       - taiga-db-data:/var/lib/postgresql/data
+#     networks:
+#       - taiga-network
+#
+#   taiga-events-rabbitmq:
+#     image: rabbitmq:3-management-alpine
+#     container_name: taiga-events-rabbitmq
+#     environment:
+#       - RABBITMQ_DEFAULT_USER=taiga
+#       - RABBITMQ_DEFAULT_PASS=taiga
+#     networks:
+#       - taiga-network
+#
+#   taiga-events:
+#     image: taigaio/taiga-events:6.8.0
+#     container_name: taiga-events
+#     environment:
+#       - RABBITMQ_USER=taiga
+#       - RABBITMQ_PASS=taiga
+#       - RABBITMQ_HOST=taiga-events-rabbitmq
+#       - RABBITMQ_PORT=5672
+#       - SECRET_KEY=your-secret-key
+#     depends_on:
+#       - taiga-events-rabbitmq
+#     networks:
+#       - taiga-network
+
+networks:
+  taiga-network:
+    driver: bridge
+
+# Uncomment if you need persistent storage for the database
+# volumes:
+#   taiga-db-data:
