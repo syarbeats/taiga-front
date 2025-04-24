@@ -10,8 +10,8 @@ services:
       - "80:80"
     environment:
       # Base configuration
-      - TAIGA_URL=http://localhost
-      - TAIGA_WEBSOCKETS_URL=ws://localhost
+      - TAIGA_URL=http://localhost:8000
+      - TAIGA_WEBSOCKETS_URL=ws://localhost:8000
       - TAIGA_SUBPATH=
       - DEBUG=false
       - DEFAULT_LANGUAGE=en
