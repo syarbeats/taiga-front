@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taiga Backend API Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .get { background: #61affe; color: white; }
+        .post { background: #49cc90; color: white; }
+        .put { background: #fca130; color: white; }
+        .delete { background: #f93e3e; color: white; }
+        .patch { background: #50e3c2; color: white; }
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .nav {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            max-width: 250px;
+        }
+        .nav ul {
+            list-style: none;
+            padding: 0;
+        }
+        .nav li {
+            margin: 5px 0;
+        }
+        .nav a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .nav a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Taiga Backend API Documentation</h1>
+    <p>This documentation covers all the API endpoints used by the Taiga frontend to communicate with the backend.</p>
+    
+    <section id="general">
+        <h2>General Information</h2>
+        
+        <div class="endpoint">
+            <h3>Base URL</h3>
+            <p>All API endpoints are relative to the base API URL configured in your Taiga instance.</p>
+            <pre>https://your-taiga-instance/api/v1</pre>
+        </div>
+
+        <div class="endpoint">
+            <h3>Authentication</h3>
+            <p>Most endpoints require authentication using a Bearer token in the Authorization header:</p>
+            <pre>Authorization: Bearer &lt;your-auth-token&gt;</pre>
+            <p>You can obtain an auth token using the login endpoint.</p>
+        </div>
+
+        <div class="endpoint">
+            <h3>Common Response Formats</h3>
+            <p>Successful responses typically return JSON data with the following structure:</p>
+            <pre>
+{
+    "id": number,
+    "created_date": "datetime",
+    "modified_date": "datetime",
+    "project": number,
+    "project_extra_info": {
+        "name": "string",
+        "slug": "string"
+    },
+    ...additional fields
+}
+            </pre>
+            <p>Error responses include an error message:</p>
+            <pre>
+{
+    "_error_message": "string",
+    "_error_type": "string"
+}
+            </pre>
+        </div>
+
+        <div class="endpoint">
+            <h3>Pagination</h3>
+            <p>List endpoints support pagination using the following query parameters:</p>
+            <pre>
+page: number          // Page number (1-based)
+page_size: number     // Number of items per page
+            </pre>
+            <p>Paginated responses include metadata:</p>
+            <pre>
+{
+    "count": number,      // Total number of items
+    "next": string,       // URL for next page
+    "previous": string,   // URL for previous page
+    "results": []        // Array of items for current page
+}
+            </pre>
+        </div>
+    </section>
+    
+    <nav class="nav">
+        <h3>Quick Navigation</h3>
+        <ul>
+            <li><a href="#auth">Authentication</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#epics">Epics</a></li>
+            <li><a href="#userstories">User Stories</a></li>
+            <li><a href="#tasks">Tasks</a></li>
+            <li><a href="#issues">Issues</a></li>
+            <li><a href="#wiki">Wiki</a></li>
+            <li><a href="#users">Users</a></li>
+        </ul>
+    </nav>
+
+    <div id="content">
+        <section id="wiki">
+            <h2>Wiki</h2>
+            
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/wiki/{wikiId}</code>
+                <p>Get wiki page by ID</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/wiki/by_slug?project={projectId}&slug={slug}</code>
+                <p>Get wiki page by slug</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/wiki?project={projectId}</code>
+                <p>List all wiki pages in a project</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/wiki-links?project={projectId}</code>
+                <p>List all wiki links in a project</p>
+            </div>
+        </section>
+        <section id="tasks">
+            <h2>Tasks</h2>
+            
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/tasks/{taskId}?project={projectId}</code>
+                <p>Get task by ID</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/tasks/by_ref?project={projectId}&ref={ref}</code>
+                <p>Get task by reference number</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/tasks?project={projectId}&milestone={sprintId}&user_story={userStoryId}</code>
+                <p>List tasks with optional filters</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/tasks/bulk_create</code>
+                <p>Bulk create tasks</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "project_id": number,
+    "milestone_id": number,
+    "us_id": number,
+    "bulk_tasks": string[]
+}
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/tasks/{taskId}/upvote</code>
+                <p>Upvote a task</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/tasks/{taskId}/downvote</code>
+                <p>Downvote a task</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/tasks/{taskId}/watch</code>
+                <p>Watch a task</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/tasks/{taskId}/unwatch</code>
+                <p>Unwatch a task</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/tasks/bulk_update_taskboard_order</code>
+                <p>Update the order of tasks in taskboard</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "project_id": number,
+    "bulk_tasks": number[]
+}
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/tasks/bulk_update_milestone</code>
+                <p>Update milestone for multiple tasks</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "project_id": number,
+    "milestone_id": number,
+    "bulk_tasks": number[]
+}
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/tasks/{taskId}/promote_to_user_story</code>
+                <p>Promote a task to user story</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "project_id": number
+}
+                </pre>
+            </div>
+        </section>
+
+        <section id="issues">
+            <h2>Issues</h2>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/issues/{issueId}?project={projectId}</code>
+                <p>Get issue by ID</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/issues/by_ref?project={projectId}&ref={ref}</code>
+                <p>Get issue by reference number</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/issues?project={projectId}</code>
+                <p>List issues with optional filters</p>
+                <h4>Optional Query Parameters:</h4>
+                <pre>
+milestone: number    // Filter by sprint/milestone
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/issues/bulk_create</code>
+                <p>Bulk create issues</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "project_id": number,
+    "milestone_id": number,
+    "bulk_issues": string[]
+}
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/issues/{issueId}/upvote</code>
+                <p>Upvote an issue</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/issues/{issueId}/downvote</code>
+                <p>Downvote an issue</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/issues/{issueId}/watch</code>
+                <p>Watch an issue</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/issues/{issueId}/unwatch</code>
+                <p>Unwatch an issue</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/projects/{projectId}/issues_stats</code>
+                <p>Get project issues statistics</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/issues/bulk_update_milestone</code>
+                <p>Update milestone for multiple issues</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "project_id": number,
+    "milestone_id": number,
+    "bulk_issues": number[]
+}
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/issues/{issueId}/promote_to_user_story</code>
+                <p>Promote an issue to user story</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "project_id": number
+}
+                </pre>
+            </div>
+        </section>
+        <section id="epics">
+            <h2>Epics</h2>
+            
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/epics/by_ref?project={projectId}&ref={ref}</code>
+                <p>Get epic by reference number</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/epics/{epicId}/upvote</code>
+                <p>Upvote an epic</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/epics/{epicId}/downvote</code>
+                <p>Downvote an epic</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/epics/{epicId}/watch</code>
+                <p>Watch an epic</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/epics/{epicId}/unwatch</code>
+                <p>Unwatch an epic</p>
+            </div>
+        </section>
+
+        <section id="userstories">
+            <h2>User Stories</h2>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/userstories/{userStoryId}?project={projectId}</code>
+                <p>Get user story by ID</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/userstories/by_ref?project={projectId}&ref={ref}</code>
+                <p>Get user story by reference number</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/userstories?project={projectId}&milestone=null</code>
+                <p>List unassigned user stories</p>
+                <h4>Optional Query Parameters:</h4>
+                <pre>
+page_size: number       // For pagination
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/userstories/bulk_create</code>
+                <p>Bulk create user stories</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "project_id": number,
+    "status_id": number,
+    "bulk_stories": string[],
+    "swimlane_id": number
+}
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/userstories/{userStoryId}/upvote</code>
+                <p>Upvote a user story</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/userstories/{userStoryId}/downvote</code>
+                <p>Downvote a user story</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/userstories/{userStoryId}/watch</code>
+                <p>Watch a user story</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/userstories/{userStoryId}/unwatch</code>
+                <p>Unwatch a user story</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/userstories/bulk_update_backlog_order</code>
+                <p>Update the order of user stories in the backlog</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "project_id": number,
+    "bulk_userstories": number[],
+    "milestone_id": number,        // optional
+    "after_userstory_id": number,  // optional
+    "before_userstory_id": number  // optional
+}
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/userstories/bulk_update_milestone</code>
+                <p>Update milestone for multiple user stories</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "project_id": number,
+    "milestone_id": number,
+    "bulk_stories": number[]
+}
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/userstories/bulk_update_kanban_order</code>
+                <p>Update the order of user stories in kanban</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "project_id": number,
+    "status_id": number,
+    "bulk_userstories": number[],
+    "swimlane_id": number,         // optional
+    "after_userstory_id": number,  // optional
+    "before_userstory_id": number  // optional
+}
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method patch">PATCH</span>
+                <code>/api/v1/userstory-statuses/{statusId}</code>
+                <p>Update user story status</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "wip_limit": number
+}
+                </pre>
+            </div>
+        </section>
+        <section id="auth">
+            <h2>Authentication</h2>
+            
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/auth</code>
+                <p>Authenticate user and get auth token</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "username": "string",
+    "password": "string",
+    "type": "normal"  // or other types
+}
+                </pre>
+                <h4>Response:</h4>
+                <pre>
+{
+    "auth_token": "string",
+    "refresh": "string",
+    "id": number,
+    "username": "string",
+    ...user data
+}
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/auth/register</code>
+                <p>Register a new user</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "username": "string",
+    "password": "string",
+    "email": "string",
+    "type": "public"  // or "private" for invitations
+}
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/users/password-recovery</code>
+                <p>Request password recovery</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "username": "string"
+}
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/users/change-password-from-recovery</code>
+                <p>Change password using recovery token</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "token": "string",
+    "password": "string"
+}
+                </pre>
+            </div>
+        </section>
+
+        <section id="projects">
+            <h2>Projects</h2>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/projects/{projectId}</code>
+                <p>Get project details by ID</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/projects/by_slug?slug={projectSlug}</code>
+                <p>Get project details by slug</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/projects?member={memberId}</code>
+                <p>List projects for a member</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/projects/{projectId}/stats</code>
+                <p>Get project statistics</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/projects/{projectId}/create_tag</code>
+                <p>Create a new project tag</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "tag": "string",
+    "color": "string"  // optional
+}
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/projects/{projectId}/edit_tag</code>
+                <p>Edit an existing project tag</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "from_tag": "string",
+    "to_tag": "string",  // optional
+    "color": "string"    // optional
+}
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/projects/{projectId}/delete_tag</code>
+                <p>Delete a project tag</p>
+                <h4>Request Body:</h4>
+                <pre>
+{
+    "tag": "string"
+}
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/v1/projects/{projectId}/tags_colors</code>
+                <p>Get all project tags with their colors</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/projects/{projectId}/leave</code>
+                <p>Leave a project</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/projects/{projectId}/change_logo</code>
+                <p>Change project logo</p>
+                <h4>Request Body:</h4>
+                <pre>
+FormData with 'logo' file
+                </pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/v1/projects/{projectId}/remove_logo</code>
+                <p>Remove project logo</p>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

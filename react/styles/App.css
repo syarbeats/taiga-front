@@ -1,0 +1,97 @@
+.react-app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.react-home {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, var(--background-color) 0%, var(--primary-color) 100%);
+}
+
+.react-home h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.react-home p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  line-height: 1.6;
+  color: var(--text-color);
+  opacity: 0.9;
+}
+
+/* Navigation styles - will be used later */
+.react-nav {
+  background-color: var(--background-color);
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.react-nav-list {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+}
+
+.react-nav-item {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.react-nav-item:hover {
+  background-color: var(--primary-color);
+}
+
+/* Layout components - will be used during migration */
+.react-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  min-height: 100vh;
+}
+
+.react-sidebar {
+  background-color: var(--background-color);
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+}
+
+.react-main {
+  padding: 2rem;
+}
+
+/* Loading states */
+.react-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.react-loading::after {
+  content: '';
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--primary-color);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
